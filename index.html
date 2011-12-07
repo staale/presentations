@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Scala 2.8 Collections</title>
+    <meta name="viewport" content="width=1280, user-scalable=no">
+
+    <!-- Replace path with correct path to deck.core.css. -->
+    <link rel="stylesheet" href="core/deck.core.css" type="text/css">
+
+    <!-- Any other extension CSS files go here. -->
+
+    <!-- Replace path with correct path to Modernizr file. -->
+    <script src="modernizr.custom.js"></script>
+    <style>
+        .deck-container {
+        font-family: "Helvetica Neue", sans-serif;
+        font-size: 2em;
+        background: #fff;
+        color: #8B3504;
+        }
+        .deck-container .slide h1 {
+        color: #c25120;
+        }
+        .deck-container .slide h2 {
+        color: #c25120;
+        border-bottom-color: #017268;
+        }
+        .deck-container .slide h3 {
+        color: #c25120;
+        }
+        .keyword {
+        font-weight: bold !important;
+        color: #00B9AA;
+        }
+        .type {
+        font-weight: bold !important;
+        }
+        .variable {
+        color: #017268;
+        }
+        .op {
+        color: #000;
+        }
+        b {
+        font-weight: bold !important;
+        }
+    </style>
+</head>
+<body class="deck-container">
+
+<!-- Create any number of elements with class slide within the container -->
+<section class="slide" id="intro">
+    <hgroup>
+        <h1>Scala 2.8 Collections</h1>
+        <h5>Ståle Undheim - UMS</h5>
+        <h5>staale@staale.org</h5>
+    </hgroup>
+</section>
+<section class="slide">
+    <h2>Scala Primer</h2>
+    <ul>
+        <li class="slide">Traits</li>
+        <li class="slide">val, var og type inference</li>
+        <li class="slide">Closures</li>
+        <li class="slide">Partial functions</li>
+        <li class="slide">Option[T]</li>
+    </ul>
+</section>
+<section class="slide">
+    <h2>Traits</h2>
+    <ul>
+        <li>Tilsvarer java interfaces</li>
+        <li>Kan ha implementasjon</li>
+        <li>Sørger for multiple inheritance</li>
+        <li class="slide">override er et required keyword i Scala</li>
+    </ul>
+</section>
+<section class="slide">
+    <h2>val og var - deklarere variabler</h2>
+    <ul>
+        <li>val tilsvarer final i Java, referansen kan ikke endres</li>
+        <li>var tilsvarer å ikke ha final i Java</li>
+    </ul>
+    <pre class="slide">
+    <span class="keyword">var</span> <span class="variable">text</span>:<span class="type">String</span> = "Hello world"
+    <span class="variable">text</span> = "Hi mom"</pre>
+    <pre class="slide">
+    <span class="keyword">val</span> <span class="variable">text</span> = "Hello world"
+    <span class="variable">text</span> = "Hi mom" // compile error</pre>
+    <pre class="slide">
+    <span class="keyword">val</span> <span class="variable">someList</span> = <span class="keyword">new</span> <span class="type">List</span>[<span class="type">String</span>]()</pre>
+    <pre class="slide">
+    <span class="keyword">val</span> <span class="variable">someList</span> = <span class="type">List</span>("Hello", "world")</pre>
+</section>
+<section class="slide">
+    <h2>Closures</h2>
+    <ul>
+        <li>Fra Java: enklere anonymous inner classes</li>
+        <li>Er i effekt klasser som implementerer Func&lt;RET, ARG&gt;</li>
+    </ul>
+    <pre class="slide">
+    <span class="keyword">val</span> <span class="variable">doubler</span> = (number:<span class="type">Int</span>) => { number * 2 }
+    <span class="slide"><span class="keyword">val</span> <span class="variable">doubled</span> = doubler.apply(10)</span>
+    <span class="slide"><span class="keyword">val</span> <span class="variable">doubled2</span> = doubler(10)</span></pre>
+
+</section>
+<section class="slide">
+    <h2>Partial functions</h2>
+    <ul>
+        <li>Funksjoner som ikke er definert for alle input variabler</li>
+        <li>Map i Scala implementerer PartialFunction[Key,Value]</li>
+    </ul>
+    <pre class="slide">
+    <span class="keyword">public interface</span> PartialFunction&lt;<span class="type">IN</span>, <span class="type">OUT</span>&gt; {
+      <span class="keyword">boolean</span> isDefinedAt(<span class="type">IN</span> <span class="variable">input</span>);
+      <span class="type">OUT</span> apply(<span class="type">IN</span> <span class="variable">input</span>);
+    }</pre>
+    <pre class="slide">
+    <span class="keyword">val</span> partial:<span class="type">PartialFunction</span>[<span class="type">String</span>, <span class="type">Int</span>] = {
+      <span class="keyword">case</span> "Hello" => 1
+      <span class="keyword">case</span> "World" => 2
+    }
+    <span class="slide"><span class="keyword">val</span> test = partial.isDefinedAt("Hello")</span>
+    <span class="slide"><span class="keyword">val</span> ok = partial("Hello")</span>
+    <span class="slide"><span class="keyword">val</span> fail = partial("Holla")</span></pre>
+</section>
+<section class="slide">
+    <h2>Option[T]</h2>
+    <ul>
+        <li>Null handling</li>
+        <li>None - ikke en verdi</li>
+        <li>Some[T] - definitivt en verdi</li>
+        <li>Option[T] - enten None eller Some[T]</li>
+        <li>En kan kjøre samme set av operasjoner på Some og None
+            <ul>
+                <li>getOrElse</li>
+                <li>map</li>
+                <li>isDefined</li>
+            </ul>
+        </li>
+    </ul>
+</section>
+<section class="slide">
+    <h2>Functional collections</h2>
+    <ul>
+        <li>Baserer seg på immutability</li>
+        <li>Tryggere å bruke multithreaded</li>
+        <li>Mutability via å oppdatere referanse</li>
+        <li>Linked List med prepend som vanlig struktur</li>
+    </ul>
+</section>
+<section class="slide">
+    <h2>Scala collections hierarki</h2>
+    <ul>
+        <li>scala.collection inneholder basis interfaces</li>
+        <li>Har aliaser inn i scala, dermed alltid i scope</li>
+    </ul>
+    <img src="collections.png" />
+</section>
+<section class="slide">
+    <h2>Scala immutable collections</h2>
+    <img src="collections.immutable.png" />
+</section>
+<section class="slide">
+    <h2>Scala mutable collections</h2>
+    <img src="collections.mutable.png" />
+</section>
+<section class="slide">
+    <h2>Scala collections overview</h2>
+    <ul>
+        <li>Alle collections har en felles konstruktø mekanikk</li>
+    </ul>
+    <pre class="slide">
+    <span class="type">Traversable</span>(1, 2, 3)
+    <span class="type">Iterable</span>("x", "y", "z")
+    <span class="type">Map</span>("x" -> 24, "y" -> 25, "z" -> 26)
+    <span class="type">Set</span>(Color.red, Color.green, Color.blue)
+    <span class="type">SortedSet</span>("hello", "world")
+    <span class="type">Buffer</span>(x, y, z)
+    <span class="type">IndexedSeq</span>(1.0, 2.0)
+    <span class="type">LinearSeq</span>(a, b, c)</pre>
+    <ul class="slide">
+        <li>Samme prinsipp gjelder også for implementasjoner</li>
+    </ul>
+    <pre class="slide">
+    <span class="type">List</span>(1, 2, 3)
+    <span class="type">HashMap</span>("x" -> 24, "y" -> 25, "z" -> 26)</pre>
+</section>
+<section class="slide">
+    <h2>Stable types</h2>
+    <p>
+        Har man en collection av type X, så vil alle transformasjoner resultere i en
+        ny instans av type X. Så hvis man har en Buffer og bruker en Traversable metode,
+        så ender man opp med en ny Buffer.
+    </p>
+    <span calss="slide">
+        <h2>Views</h2>
+        <ul>
+            <li>Alle collections støtter metoden "view", som returnerer en kopi som lazy evaluater alt.</li>
+            <li>.view -> fra strict til lazy</li>
+            <li>.force -> fra lazy til strict</li>
+        </ul>
+    </span>
+</section>
+<section class="slide">
+    <h2>Trait Traversable</h2>
+    <ul>
+        <li>En abstrakt funksjon</li>
+        <li class="slide"><pre>
+    <span class="keyword">def</span> foreach[<span class="type">U</span>](f: Elem => U)</pre>
+        </li>
+        <li class="slide">Alle andre funksjoner implementeres som en funksjon av foreach</li>
+    </ul>
+    <div class="slide">
+        <h2>Addition</h2>
+    <pre><span class="variable">xs</span> ++ <span class="variable">ys</span></pre>
+        <p class="slide">Tilsvarer xs.++(ys)</p>
+    </div>
+</section>
+<section class="slide">
+    <h2>Trait Traversable - Mapping functions</h2>
+    <pre>  <span class="variable">xs</span> map <span class="variable">f</span></pre>
+    Resultatet av å kjøre funksjon f for alle element i xs
+    <br />
+    <span class="slide"><pre>  <span class="variable">xs</span> flatMap <span class="variable">f</span></pre>
+    Som map, men antar at f returnerer en collection, og konkatenerer resultatet</span>
+    <br />
+    <span class="slide"><pre>  <span class="variable">xs</span> collect <span class="variable">f</span></pre>
+    Som map, men tar en partial function, og mapper kun de verdier som funksjonen kan applies for</span>
+</section>
+<section class="slide">
+    <h2>Trait Traversable - Conversions</h2>
+        <pre>
+    <span class="variable">xs</span>.toArray
+    <span class="variable">xs</span>.toList
+    <span class="variable">xs</span>.toIterable
+    <span class="variable">xs</span>.toSeq
+    <span class="variable">xs</span>.toIndexedSeq
+    <span class="variable">xs</span>.toStream
+    <span class="variable">xs</span>.toSet
+    <span class="variable">xs</span>.toMap</pre>
+    <ul>
+        <li><b>toMap</b> fungerer kun for key/value pairs, gir compile time error ellers</li>
+    </ul>
+</section>
+<section class="slide">
+    <h2>Trait Traversable - Copying</h2>
+    <pre>  <span class="variable">xs</span> copyToBuffer <span class="variable">buf</span></pre>
+    Kopierer innholdet til en buffer
+    <br />
+    <pre>  <span class="variable">xs</span> copyToArray(<span class="variable">arr</span>, <span class="variable">s</span>, <span class="variable">n</span>)</pre>
+    Kopierer inntill n elementer til arr, og starter fra s. s og n er valgfrie
+    <br />
+    <span class="slide">
+        <h2>Trait Traversable - Size info</h2>
+        <pre>
+    <span class="variable">xs</span>.isEmpty
+    <span class="variable">xs</span>.nonEmpty
+    <span class="variable">xs</span>.size
+    <span class="variable">xs</span>.hasDefiniteSize</pre>
+    </span>
+</section>
+<section class="slide">
+    <h2>Trait Traversable - Element Retrieval</h2>
+    <pre>
+    <span class="variable">xs</span>.head
+    <span class="variable">xs</span>.headOption
+    <span class="variable">xs</span>.last
+    <span class="variable">xs</span>.lastOption</pre>
+    </span>
+    <span class="slide">
+        <pre>  <span class="variable">xs</span> find <span class="variable">p</span></pre>
+        Finner den første variabelen som oppfølger predicate p
+    </span>
+</section>
+<section class="slide">
+    <h2>Trait Traversable - Subcollections</h2>
+    <pre>
+    <span class="variable">xs</span>.tail
+    <span class="variable">xs</span>.init
+    <span class="variable">xs</span>.slice(<span class="variable">from</span>, <span class="variable">to</span>)
+    <span class="variable">xs</span>.take(<span class="variable">n</span>)</pre>
+    <span class="variable">xs</span>.drop(<span class="variable">n</span>)</pre>
+    </span>
+    <span class="slide">
+        <pre>    <span class="variable">xs</span> takeWhile <span class="variable">p</span>
+    <span class="variable">xs</span> dropWhile <span class="variable">p</span></pre>
+        Bruker eller skiper alle element fra start som matcher predicate p
+    </span>
+    <span class="slide">
+        <pre>    <span class="variable">xs</span> filter <span class="variable">p</span>
+        <span class="variable">xs</span> filterNot <span class="variable">p</span></pre>
+        Kun element som oppfølger/ikke oppfølger predicate p
+    </span>
+    <span class="slide">
+        <pre>    <span class="variable">xs</span> withFilter <span class="variable">p</span></pre>
+        Ny collection som vil filtrere for metodene map, flatMap, foreach og withFilter
+    </span>
+</section>
+<section class="slide">
+    <h2>Trait Traversable - Subdivisions</h2>
+    <span>
+        <pre>    <span class="variable">xs</span> splitAt <span class="variable">n</span></pre>
+        Returnerer en tuple tilsvarende (xs take n, xs drop n)
+    </span>
+    <span class="slide">
+        <pre>    <span class="variable">xs</span> span <span class="variable">p</span></pre>
+        Returnerer en tuple tilsvarende (xs takeWhile p, xs dropWhile p)
+    </span>
+    <span class="slide">
+        <pre>    <span class="variable">xs</span> partition <span class="variable">p</span></pre>
+        Deler collectionen opp i to lister, en som oppfølger p, og en som ikke gjør det. Tilsvarer
+        (xs filter p, xs filterNot p)
+    </span>
+    <span class="slide">
+        <pre>    <span class="variable">xs</span> groupBy <span class="variable">f</span></pre>
+        Grupperer elementene i collectionen i ett map, der f vil gi keyen til values som skal slåes sammen.
+    </span>
+</section>
+<section class="slide">
+    <h2>Trait Traversable - Element Conditions</h2>
+    <span>
+        <pre>    <span class="variable">xs</span> forall <span class="variable">p</span></pre>
+        Sjekker om predicate p gjelder for alle elementer i xs
+    </span>
+    <span class="slide">
+        <pre>    <span class="variable">xs</span> exists <span class="variable">p</span></pre>
+        Sjekker om det finnes et element i xs som oppfyller predicate p
+    </span>
+    <span class="slide">
+        <pre>    <span class="variable">xs</span> count <span class="variable">p</span></pre>
+        Teller antall elementer som oppfyller predicate p
+    </span>
+</section>
+<section class="slide">
+    <h2>Trait Traversable - Folds</h2>
+    <span>
+        <pre>    (<span class="variable">z</span> /: <span class="variable">xs</span>)(<span class="variable">op</span>)
+    <span class="variable">xs</span>.foldLeft(<span class="variable">z</span>)(<span class="variable">op</span>)</pre>
+        Utfører funksjonen op med 2 og 2 element på xs, starter med z.
+        <ul>
+            <li>Traversable(1,2,3).foldLeft(0)(op)</li>
+            <li>a = 0</li>
+            <li>a = op(a, 1)</li>
+            <li>a = op(a, 2)</li>
+            <li>a = op(a, 3)</li>
+        </ul>
+    </span>
+    <span class="slide">
+        <pre>    <span class="variable">xs</span>.reduceLeft(<span class="variable">op</span>)</pre>
+        Som fold, men bruker ikke en init verdi, kun elementer fra traversablen.
+    </span>
+</section>
+<section class="slide">
+    <h2>Trait Traversable - Folds</h2>
+    <span>
+        <pre>    (<span class="variable">xs</span> :\ <span class="variable">z</span>)(<span class="variable">op</span>)
+    <span class="variable">xs</span>.foldRight(<span class="variable">z</span>)(<span class="variable">op</span>)</pre>
+        Utfører funksjonen op med 2 og 2 element på xs, starter med z. Denne tar fra slutten av traversable først.
+        <ul>
+            <li>Traversable(1,2,3).foldLeft(0)(op)</li>
+            <li>a = 0</li>
+            <li>a = op(3, a)</li>
+            <li>a = op(2, a)</li>
+            <li>a = op(1, a)</li>
+        </ul>
+    </span>
+        <span class="slide">
+        <pre>    <span class="variable">xs</span>.reduceRight(<span class="variable">op</span>)</pre>
+        Som fold, men bruker ikke en init verdi, kun elementer fra traversablen.
+    </span>
+</section>
+<section class="slide">
+    <h2>Trait Traversable - Specific folds</h2>
+    <span>
+        <pre>
+    <span class="variable">xs</span>.sum
+    <span class="variable">xs</span>.product
+    <span class="variable">xs</span>.min
+    <span class="variable">xs</span>.max</pre>
+        sum og product krever at innholdet er numeric. min og max krever at innholdet er orderable (tilsvarer comparable i java)
+    </span>
+</section>
+<section class="slide">
+    <h2>Trait Traversable - Strings</h2>
+    <span>
+        <pre>
+    <span class="variable">xs</span>.addString(<span class="variable">b</span>, <span class="variable">start</span>, <span class="variable">sep</span>,<span class="variable">end</span>)
+    <span class="variable">xs</span>.mkString(<span class="variable">start</span>, <span class="variable">sep</span>, <span class="variable">end</span>)
+    <span class="variable">xs</span>.stringPrefix</pre>
+        addString legger til en stringbuffer, mens mkString lager en ny string. start, sep og end er optional. første argument er sep, så start og end.
+    </span>
+</section>
+<section class="slide">
+    <h2>Trait Traversable - Views</h2>
+    <span>
+        <pre>
+    <span class="variable">xs</span>.view
+    <span class="variable">xs</span>.view(<span class="variable">from</span>, <span class="variable">to</span>)</pre>
+    </span>
+</section>
+<section class="slide">
+    <h2>Trait Iterable</h2>
+    <ul>
+        <li>En abstrakt funksjon</li>
+        <li class="slide"><pre>
+    <span class="keyword">def</span> iterator:<span class="type">Iterable</span>[A]</pre>
+        </li>
+        <li class="slide">foreach og andre funksjoner er implementer på basis av denne metoden</li>
+    </ul>
+</section>
+<section class="slide">
+    <h2>Trait Iterable - Other iterators</h2>
+    <span>
+        <pre>
+    <span class="variable">xs</span>.grouped(<span class="variable">size</span>)</pre>
+        <ul><li>Deler opp denne iteratoren i biter av gitt størrelse.</li></ul>
+    <pre><span class="type">Iterable</span>(1,2,3,4,5).grouped(3)
+    // Iterable(Iterable(1,2,3), Iterable(4,5))</pre>
+    </span>
+    <br />
+    <span class="slide">
+        <pre>
+    <span class="variable">xs</span>.sliding(<span class="variable">size</span>)</pre>
+    <ul><li>"Sliding window" over iterable</li></ul>
+    <pre><span class="type">Iterable</span>(1,2,3,4).sliding(2)
+    // Iterable(
+    //   Iterable(1,2),
+    //   Iterable(2,3),
+    //   Iterable(3,4))</pre>
+    </span>
+    <ul class="slide">
+        <li>Resulterer alltid i en Iterable av orginal type (Iterable[List] f.eks.)</li>
+    </ul>
+</section>
+<section class="slide">
+    <span>
+    <h2>Trait Iterable - Other iterators</h2>
+        <pre>   <span class="variable">xs</span>.takeRight(<span class="variable">n</span>)
+    <span class="variable">xs</span>.dropRight(<span class="variable">n</span>)</pre>
+        <ul><li>Tar kun siste n elementer/alt bortsett fra siste n elementer.</li></ul>
+    </span>
+    <span class="slide">
+    <h2>Trait Iterable - Zippers</h2>
+        <pre>   <span class="variable">xs</span> zip <span class="variable">ys</span>
+    <span class="variable">xs</span>.zipAll(<span class="variable">ys</span>, <span class="variable">x</span>, <span class="variable">y</span>)
+    <span class="variable">xs</span>.zipWithIndex</pre>
+        <ul>
+            <li>zip slår isammen to iterables til en iterable av tuples. Størrelsen blir den på den minste av xs og ys.</li>
+            <li>zipAll er som zip, men padder med x eller y elementer for å fylle opp til lengden av den lengste</li>
+            <li>zipWithIndex lager tupler med index og verdi</li>
+        </ul>
+    </span>
+</section>
+<section class="slide">
+    <span>
+    <h2>Trait Iterable - Comparison</h2>
+        <pre>   <span class="variable">xs</span> sameElements <span class="variable">ys</span></pre>
+        <ul>
+            <li>tester om xs og ys har de samme element i samme rekkefølge</li>
+        </ul>
+    </span>
+</section>
+<section class="slide">
+    <span>
+    <h2>Trait Seq, IndexedSeq, LinearSeq</h2>
+        <ul>
+            <li>IndexedSeq er en spesialisering av Seq som garanterer constant time random access</li>
+            <li>LinearSeq er en spesialisering av Seq for linær access, og constant head og tail</li>
+            <li class="slide">Seq er en PartialFunaction[Int, T]</li>
+            <li class="slide">Seq legger til 33 funksjoner i tillegg til de i Iterable</li>
+        </ul>
+    </span>
+</section>
+<section class="slide">
+    <span>
+    <h2>Trait Seq - Methods</h2>
+        <ul>
+            <li><b>Indexing and Length: </b> xs(i), xs.apply(i), xs.isDefinedAt(i), xs.length, xs.lengthCompare(ys), xs.indices</li>
+            <li><b>Indexing Search: </b> xs.indexOf(x), xs.lastIndexOf(x), xs.indexOfSlice(ys), xs.lastIndexOfSlice(ys), xs.indexWhere(p), xs.segmentLength(p, i), xs.prefixLength(p)</li>
+            <li><b>Additions: </b>x +: xs, xs :+ x, xs.padTo(len, x)</li>
+            <li><b>Updates: </b>xs patch(i, ys, r), xs.updated(i, x), xs(i) = x</li>
+            <li><b>Sorting: </b>xs.sorted, xs.sortWith(lt), xs.sortBy(f)</li>
+            <li><b>Reversals: </b>xs.reverse, xs.reverseIterator, xs.reverseMap(f)</li>
+            <li><b>Comparisons: </b>xs.startsWith(ys), xs.endsWith(ys), xs.contains(x), xs.containsSlice(ys), (xs corresponds ys)(p)</li>
+            <li><b>Multiset operations: </b> xs intersect ys, xs diff ys, xs union ys, xs.distinct</li>
+        </ul>
+    </span>
+</section>
+<section class="slide">
+    <span>
+        <h2>Trait Seq - Implementations</h2>
+        <h3>LinearSeq</h3>
+        <ul>
+            <li>scala.collection.immutable.List</li>
+            <li>scala.collection.immutable.Stream</li>
+        </ul>
+        <h3>IndexedSeq</h3>
+        <ul>
+            <li>scala.Array</li>
+            <li>scala.collection.mutable.ArrayBuffer</li>
+            <li>java.lang.String</li>
+        </ul>
+    </span>
+    <span class="slide">
+        <h2>Vector</h2>
+        <ul>
+            <li>Bra ytelse både for linear access og random access</li>
+            <li>Er en tre struktur med 32 noder på hvert nivå</li>
+            <li>Maks 7 indirections for en liste med 2^31 elementer</li>
+        </ul>
+    </span>
+</section>
+<section class="slide">
+    <span>
+        <h2>Trait Seq - Vector implementation</h2>
+        <ul>
+            <li>Bra ytelse både for linear access og random access</li>
+            <li>Er en tre struktur med 32 noder på hvert nivå</li>
+            <li>Maks 7 indirections for en liste med 2^31 elementer</li>
+        </ul>
+    </span>
+</section>
+<section class="slide">
+    <span>
+        <h2>Trait Set</h2>
+        <ul>
+            <li>Som java.util.Set, inneholder kun unike elementer</li>
+            <li>Iterable med ekstra funksjoner for testing</li>
+        </ul>
+    </span>
+    <span class="slide">
+        <ul>
+            <li><b>Tests: </b>xs.contains(x), xs(x), xs.subsetOf(ys)</li>
+            <li><b>Additions: </b>xs + x, xs + (x, y, z), xs ++ys</li>
+            <li><b>Removals: </b>xs - x, xs - (x, y, z), xs -- ys, xs.empty</li>
+            <li><b>Binary operations: </b></li>
+        </ul>
+        <h3>Mutable sets</h3>
+        <ul>
+            <li><b>Additions: </b>xs += x, xs += (x, y, z), xs ++= ys, xs add x</li>
+            <li><b>Removals: </b>xs -= x, xs -= (x, y, z), xs --= ys, xs remove x, xs retain p, xs.xlear()</li>
+            <li><b>Update: </b>xs(x) = b (true => add, false => remove)</li>
+            <li><b>Cloning: </b>xs.clone</li>
+        </ul>
+    </span>
+</section>
+<section class="slide">
+    <span>
+        <h2>Trait Map</h2>
+        <ul>
+            <li>Som java.util.Map, inneholder key til value mappings</li>
+            <li>convinience constructor: Map(k1 -> v1, k2 -> v2, k3 -> v3)</li>
+            <li>Er en PartialFunction[Key, Value]</li>
+        </ul>
+    </span>
+    <span class="slide">
+        <ul>
+            <li><b>Lookups: </b>ms get k, ms(k), ms.getOrElse(k, d), ms.contains(k), ms.isDefinedAt(k)</li>
+            <li><b>Additions and Updates: </b>ms + (k -> v), ms + (k -> v, l -> w), ms ++ kvs, ms.updated(k, v)</li>
+            <li><b>Removals: </b>ms - k, ms - (k, l, m), ms -- ks</li>
+            <li><b>Subcollections: </b>ms.keys, ms.keySet, ms.keysIterator, ms.values, ms.valuesIterator</li>
+            <li><b>Transformation: </b>ms.filterKeys(p), ms.mapValues(f)</li>
+        </ul>
+    </span>
+</section>
+<section class="slide">
+    <span>
+        <h2>Trait Map -  mutable operations</h2>
+        <ul>
+            <li><b>Additions and Updates: </b>ms(k) = v, ms.update(k, v), ms += (k -> v), ms += (k -> v, l -> w), ms ++= kvs, ms.put(k, v), ms.getOrElseUpdate(k, d)</li>
+            <li><b>Removals: </b>ms -= k, ms -= (k, l, m), ms --= ks, ms.remove(k), ms.retain(p), ms.clear()</li>
+            <li><b>Transformations: </b>ms.transform(f)</li>
+            <li><b>Cloning: </b>ms.clone</li>
+        </ul>
+    </span>
+</section>
+<section class="slide">
+    <span>
+        <h2>Implementation - builders</h2>
+        <pre>
+    <span class="keyword">class</span> <span class="type">Builder</span>[-<span class="type">Elem</span>, +<span class="type">To</span>] {
+        <span class="keyword">def</span> +=(<span class="variable">elem</span>: <span class="type">Elem</span>): this.type
+        <span class="keyword">def</span> result(): To
+        <span class="keyword">def</span> clear()
+        <span class="keyword">def</span> mapResult(<span class="variable">f</span>: <span class="type">To</span> => <span class="type">NewTo</span>): <span class="type">Builder</span>[<span class="type">Elem</span>, <span class="type">NewTo</span>]
+    }</pre>
+        <pre class="slide">
+    <span class="keyword">val</span> <span class="variable">buf</span> = <span class="keyword">new</span> <span class="type">ArrayBuffer</span>[<span class="type">Int</span>]
+    <span class="keyword">val</span> <span class="variable">bldr</span>:<span class="type">Builder</span>[<span class="type">Int</span>, <span class="type">Array</span>[<span class="type">Int</span>]] =
+        <span class="variable">buf</span> mapResult (_.toArray)</pre>
+    </span>
+    <ul class="slide">
+        <li>Builder er basis for å utføre transformasjoner av collections</li>
+    </ul>
+</section>
+<section class="slide">
+    <span>
+        <h2>Implementation - TraversableLike</h2>
+        <pre>
+    <span class="keyword">class</span> <span class="type">TraversableLike</span>[+<span class="type">Elem</span>, +<span class="type">Repr</span>] {
+        <span class="keyword">def</span> newBuilder: <span class="type">Builder</span>[<span class="type">Elem</span>, <span class="type">Repr</span>] // deferred
+        <span class="keyword">def</span> foreach[<span class="type">U</span>](f: <span class="type">Elem</span> => <span class="type">U</span>)        // deferred
+            ...
+        <span class="keyword">def</span> filter(<span class="variable">p</span>: <span class="type">Elem</span> => <span class="type">Boolean</span>): <span class="type">Repr</span> = {
+            val <span class="variable">b</span> = newBuilder
+            foreach { <span class="variable">elem</span> => <span class="keyword">if</span> (<span class="variable">p</span>(<span class="variable">elem</span>)) <span class="variable">b</span> += <span class="variable">elem</span> }
+            <span class="variable">b</span>.result
+        }
+    }</pre>
+    <ul class="slide">
+        <li>Abstrakt klasse for å lage Traversable</li>
+        <li>Tilsvarende finnes for de andre collection typene også</li>
+        <li>+Elem sier at denne tar elementer som er Elem eller subtyper</li>
+        <li>+Repr sier at representasjonen av denne collectionen er Repr eller en subtype av Repr</li>
+    </ul>
+    </span>
+</section>
+<section class="slide">
+    <span>
+        <h2>Implementation - TraversableLike, map</h2>
+        <pre>
+    <span class="keyword">def</span> map[<span class="type">B</span>, <span class="type">That</span>](<span class="variable">f</span>: <span class="type">Elem</span> => <span class="type">B</span>)
+        (<span class="keyword">implicit</span> <span class="variable">bf</span>: <span class="type">CanBuildFrom</span>[<span class="type">Repr</span>, <span class="type">B</span>, <span class="type">That</span>]):<span class="type">That</span> = {
+        <span class="keyword">val</span> <span class="variable">b</span> = <span class="variable">bf</span>(this)
+        <span class="keyword">for</span> (<span class="variable">x</span> <- <span class="keyword">this</span>) <span class="variable">b</span> += <span class="variable">f</span>(<span class="variable">x</span>)
+        <span class="variable">b</span>.result
+    }</pre>
+        <pre>
+    <span class="keyword">trait</span> <span class="type">CanBuildFrom</span>[-<span class="type">From</span>, -<span class="type">Elem</span>, +<span class="type">To</span>] {
+        <span class="keyword">def</span> apply(<span class="variable">from</span>: <span class="keyword">From</span>): <span class="type">Builder</span>[<span class="type">Elem</span>, <span class="type">To</span>]
+    }</pre>
+    <ul class="slide">
+        <li>implicit parameter blir slått opp av kompiler</li>
+        <li>Gjør at en Array[X] kan bli en Array[Y] hvis det finnes en implicit variabel med type CanBuildFrom[Array[X], X, Array[Y]]</li>
+        <li>From kan være en supertype av Array[X]</li>
+        <li>To typen avgjøres av den builderen som finnes som er i scope</li>
+    </ul>
+    </span>
+</section>
+<section class="slide">
+    <h2>Referanser</h2>
+    <ul>
+        <li><a href="http://www.scala-lang.org/docu/files/collections-api/collections.html">The Scala 2.8 Collections API</a>
+        <sub>http://www.artima.com/scalazine/articles/scala_collections_architecture.html</sub></li>
+        <li><a href="http://www.artima.com/scalazine/articles/scala_collections_architecture.html">What's New in Scala 2.8: The Architecture of Scala Collections</a>
+        <sub>http://www.artima.com/scalazine/articles/scala_collections_architecture.html</sub></li>
+    </ul>
+</section>
+<section class="slide">
+    <h1>Spørsmål</h1>
+</section>
+<section class="slide">
+    <h1>Takk for meg</h1>
+</section>
+<script src="jquery-1.7.min.js"></script>
+<script src="core/deck.core.js"></script>
+
+<script>
+    $(function() {
+    $.deck('.slide');
+    });
+</script>
+</body>
+</html>
